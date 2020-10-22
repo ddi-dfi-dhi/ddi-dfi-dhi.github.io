@@ -50,7 +50,7 @@
                         <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#Modal-a">Draw</button>
                     </div>
                     <div class="invalid-feedback">
-                        Please enter a valid drug or select a drug
+                        Please enter a valid SMILES
                     </div>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                         <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#Modal-b">Draw</button>
                     </div>
                     <div class="invalid-feedback">
-                        Please enter a valid drug or select a drug
+                        Please enter a valid SMILES
                     </div>
                 </div>
             </div>
@@ -222,22 +222,14 @@
         });
     });
 
-    var flag_a;
-    var flag_b;
-    var check_l = [];
-
-    $.get('https://www.pharmpkdb.com:14488/model/check', function(data){
-        $.each(data, function (i, d) {
-            check_l.push(d);
-        })
-
-    });
+    var flag_a = 0;
+    var flag_b = 0;
 
     $(function(){
         $('#s').click(function (e) {
             e.preventDefault();
-            var d_a = String($('#drug-a').val()).toLowerCase();
-            var d_b = String($('#drug-b').val()).toLowerCase();
+            var d_a = String($('#drug-a').val());
+            var d_b = String($('#drug-b').val());
             if (d_a == '' && d_b == '') {
                 $("#drug-a").removeClass('is-valid');
                 $("#drug-a").addClass('is-invalid');
@@ -248,38 +240,40 @@
                 $('#drug-a').val('');
                 $('#drug-b').val('');
             } else {
-                if ($.inArray(d_a, check_l) == -1) {
-                    $("#drug-a").removeClass('is-valid');
-                    $("#drug-a").addClass('is-invalid');
-                    flag_a = 0;
-                } else {
-                    $("#drug-a").removeClass('is-invalid');
-                    $("#drug-a").addClass('is-valid');
-                    flag_a = 1;
-                };
-                if ($.inArray(d_b, check_l) == -1) {
-                    $("#drug-b").removeClass('is-valid');
-                    $("#drug-b").addClass('is-invalid');
-                    flag_b = 0;
-                } else {
-                    $("#drug-b").removeClass('is-invalid');
-                    $("#drug-b").addClass('is-valid');
-                    flag_b = 1;
-                };
+                var data = {'drug_a' : d_a, 'drug_b' : d_b};
+				$.ajax({
+					type: 'POST',
+					url: 'http://www.pharmpkdb.com:14433/model_3/check',
+					data: JSON.stringify(data),
+					dataType: 'json',
+					contentType: 'application/json',
+					success: function (data) {
+						if (data.d_a == 'true') {
+							flag_a = 1;
+							$("#drug-a").removeClass('is-invalid');
+							$("#drug-a").addClass('is-valid');
+						}
+						else {
+							flag_a = 0;
+							$("#drug-a").removeClass('is-valid');
+							$("#drug-a").addClass('is-invalid');
+						};
+						if (data.d_b == 'true') {
+							flag_b = 1;
+							$("#drug-b").removeClass('is-invalid');
+							$("#drug-b").addClass('is-valid');
+						}
+						else {
+							flag_b = 0;
+							$("#drug-b").removeClass('is-valid');
+							$("#drug-b").addClass('is-invalid');
+						};
+					}
+				});
 
                 if (flag_a == 1 && flag_b == 1) {
-                    $('#table-known').bootstrapTable('refreshOptions', {
-                        url: 'https://pharmpkdb.com:14488/model/known',
-                        method: 'post',
-                        queryParams: function (params) {
-                            return {
-                                drug_a: d_a,
-                                drug_b: d_b
-                            }
-                        },
-                    });
                     $('#table-results').bootstrapTable('refreshOptions', {
-                        url: 'https://pharmpkdb.com:14488/model/predict',
+                        url: 'https://pharmpkdb.com:14488/model_3/predict',
                         method: 'post',
                         queryParams: function (params) {
                             return {
