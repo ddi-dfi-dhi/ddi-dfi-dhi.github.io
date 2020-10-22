@@ -268,21 +268,20 @@
 							$("#drug-b").removeClass('is-valid');
 							$("#drug-b").addClass('is-invalid');
 						};
+						if (flag_a == 1 && flag_b == 1) {
+							$('#table-results').bootstrapTable('refreshOptions', {
+								url: 'https://pharmpkdb.com:14488/model_3/predict',
+								method: 'post',
+								queryParams: function (params) {
+									return {
+										drug_a: d_a,
+										drug_b: d_b
+									}
+								},
+							});
+						};
 					}
 				});
-
-                if (flag_a == 1 && flag_b == 1) {
-                    $('#table-results').bootstrapTable('refreshOptions', {
-                        url: 'https://pharmpkdb.com:14488/model_3/predict',
-                        method: 'post',
-                        queryParams: function (params) {
-                            return {
-                                drug_a: d_a,
-                                drug_b: d_b
-                            }
-                        },
-                    });
-                };
             };
         });
     });
