@@ -235,10 +235,12 @@
                 $("#drug-a").addClass('is-invalid');
                 $("#drug-b").removeClass('is-valid');
                 $("#drug-b").addClass('is-invalid');
+				$('#table-results').bootstrapTable('removeAll');
             } else if (d_a == d_b) {
                 alert("Drug A and Drug B cannot be the same!");
                 $('#drug-a').val('');
                 $('#drug-b').val('');
+				$('#table-results').bootstrapTable('removeAll');
             } else {
                 var data = {'drug_a' : d_a, 'drug_b' : d_b};
 				$.ajax({
