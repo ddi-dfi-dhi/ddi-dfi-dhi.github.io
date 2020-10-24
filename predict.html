@@ -241,7 +241,18 @@
                 $('#drug-a').val('');
                 $('#drug-b').val('');
 				$('#table-results').bootstrapTable('removeAll');
-            } else {
+            } else if (d_a == '' || d_b == '') {
+                if (d_a == '') {
+					$("#drug-a").removeClass('is-valid');
+					$("#drug-a").addClass('is-invalid');
+					$('#table-results').bootstrapTable('removeAll');
+				};
+				if (d_b == '') {
+					$("#drug-b").removeClass('is-valid');
+					$("#drug-b").addClass('is-invalid');
+					$('#table-results').bootstrapTable('removeAll');
+				};
+            }else {			
                 var data = {'drug_a' : d_a, 'drug_b' : d_b};
 				$.ajax({
 					type: 'POST',
